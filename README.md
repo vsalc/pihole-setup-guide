@@ -9,11 +9,15 @@ The purpose of this guide is to serve as a reference for configuring network-wid
 - [Introduction](#introduction)
 - [Parts List](#parts-list)
 - [Installation and Configuration](#installation-and-configuration)
-   - [SSH Key Pair Generation](#ssh-key-pair-generation)
-      - [ssh-keygen Command](#ssh-keygen-command)
-   - [Flashing the MicroSD Card with Raspberry Pi Imager](#flashing-the-microsd-card-with-raspberry-pi-imager)
-      - [Raspberry Pi Imager Setup Steps](#raspberry-pi-imager-setup-steps)
-   - [Setting a Static IP Address](#setting-a-static-ip-address)
+  - [SSH Key Pair Generation](#ssh-key-pair-generation)
+    - [ssh-keygen Command](#ssh-keygen-command)
+  - [Flashing the MicroSD Card with Raspberry Pi Imager](#flashing-the-microsd-card-with-raspberry-pi-imager)
+    - [Raspberry Pi Imager Setup Steps](#raspberry-pi-imager-setup-steps)
+  - [Setting a Static IP Address](#setting-a-static-ip-address)
+  - [SSH to and Update the Server](#ssh-to-and-update-the-server)
+    - [SSH Command](#ssh-command)
+    - [Updating the System Command](#updating-the-system-command)
+  - [Installing Pi-hole](#installing-pi-hole) 
 - [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
 
@@ -34,7 +38,7 @@ This guide walks through installing and configuring Pi-hole on a Raspberry Pi, i
 - MicroSD Card Reader (required if your computer does not have a built-in reader)
 - 5V 2.5A Micro-USB Power Supply
 - Ethernet Cable (optional, but strongly recommended)
-- A Computer (Windows or Linux)
+- A Computer (Windows with WSL or Linux)
 
 ## Installation and Configuration
 
@@ -44,7 +48,7 @@ To manage the Pi-hole server remotely, we need the ability to connect via SSH. S
 
 This section demonstrates how to generate an SSH key pair from the command line. In addition to improving security, this approach helps familiarize you with basic Linux command-line tools that are commonly used when administering servers.
 
-#### ssh-keygen Command
+#### SSH Keygen Command
 
 ```bash
 ssh-keygen -t ed25519 -C "user@pihole"
@@ -113,7 +117,79 @@ Before opening the application, insert the microSD card into the reader and conn
 
 ### Setting a Static IP Address
 
-To ensure consistent network access, the Raspberry Pi should be assigned a static IP address before installing Pi-hole.
+For the next part of the setup, we need to access the router's web interface. Open a web browser and enter the IP address of your router. Alternatively, many routers list a gateway URL on a label on the back of the device, which can also be used.
+
+If you are unsure of your router's IP address, you can determine it using the following commands, depending on your operating system.
+
+#### Windows Gateway IP
+```powershell
+ipconfig
+```
+
+#### Linux Gateway IP
+```bash
+ip route
+```
+
+---
+
+#### Router Configuration Steps
+1. **Log in to the web interface**
+   Using either the default credentials printed on the router or a password you previously set, log in to the router's web interface. If you have never accessed this page before or are unsure of the credentials, they are commonly printed on the back or underside of the router near the gateway URL.
+
+2. **Locate DHCP Settings**
+   Find the DHCP configuration section within the router's settings. The exact location varies by manufacturer. In my case, the following navigation path was used: `Network Settings > IPv4 Address Distribution > DHCP Connection Settings`. DHCP (Dynamic Host Configuration Protocol) is responsible for automatically assigning IP addresses to devices on a network.
+
+3. **Setting a Static IP Address**
+   In the list of connected devices, locate your Raspberry Pi using the hostname you configured earlier. Edit the device entry and change the lease type to `Static Lease Type`, then save or apply the changes.
+
+> **Note**: Write down the IP address of the Raspberry Pi.
+
+### SSH to and Update the Server
+
+This short section covers connecting to the Raspberry Pi via SSH for the first time and updating system packages. This process is simple and can be completed with two commands. Start by opening a terminal window and pasting the first command.
+
+#### SSH Command 
+```bash
+ssh -i /home/user/.ssh/id_ed25519 user@192.168.X.X
+```
+
+Here is a breakdown of each component of the command:
+- `ssh`: The utility used to connect to a remote server via SSH.
+- `-i /home/user/.ssh/id_ed25519`: Specifies the identity file (private SSH key) used for authentication.
+- `user@192.168.X.X`: Specifies the username and IP address of the remote machine. Replace this with the IP address of your Raspberry Pi obtained in the previous section.
+
+You may be prompted to confirm adding the host to your list of known hosts. Accept this prompt and press `Enter` to continue. You should now be connected to the system. This is the perfect time to say *I'm in*.
+
+Now that you are connected, the first administrative task is to update the system packages.
+
+#### Updating the System Command
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Here is a breakdown of each component of the command:
+- `sudo`: Runs the command with root (administrative) privileges.
+- `apt update`: Refreshes the package repository metadata.
+- `&&`: Bash operator that executes the next command only if the previous command succeeds.
+- `apt upgrade`: Installs available updates for installed packages.
+- `-y`: Automatically accepts prompts during the upgrade process.
+
+### Installing Pi-hole
+
+Finally, it is time to install the Pi-hole software. Keeping this terminal session active, open a new browser window and navigate to the Pi-hole installation guide, linked [here](https://docs.pi-hole.net/main/basic-install/). 
+
+The Pi-hole team has made this process straightforward by providing a one-step automated installer. Copy the command:
+
+```bash
+curl -sSL https://install.pi-hole.net | bash
+```
+
+Paste the command into the terminal session connected to your Raspberry Pi. The installation process will run automatically, so you can sit back and wait. Once the screen switches to the blue installer interface, you can proceed to the next section.
+
+### Pi-hole Configuration
+
+Todo...
 
 ## Maintenance
 
