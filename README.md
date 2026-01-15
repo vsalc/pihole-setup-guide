@@ -21,6 +21,7 @@ The purpose of this guide is to serve as a reference for configuring network-wid
     - [SSH Command](#ssh-command)
     - [Updating the System Command(s)](#updating-the-system-commands)
   - [Installing Pi-hole](#installing-pi-hole) 
+    - [Pi-hole One-Step Automated Install Command](#pi-hole-one-step-automated-install-command)
 - [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
 
@@ -190,8 +191,9 @@ You will be prompted to enter your password. Type in the password you set while 
 
 Finally, it is time to install the Pi-hole software. Keeping this terminal session active, open a new browser window and navigate to the Pi-hole installation guide, linked [here](https://docs.pi-hole.net/main/basic-install/). 
 
-The Pi-hole team has made this process straightforward by providing a one-step automated installer. Copy the command:
+The Pi-hole team has made this process straightforward by providing a one-step automated installer.
 
+#### Pi-hole One-Step Automated Install Command
 ```bash
 curl -sSL https://install.pi-hole.net | bash
 ```
