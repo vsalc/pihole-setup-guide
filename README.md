@@ -2,7 +2,7 @@
 
 # Pi-hole Setup Guide
 
-The purpose of this guide is to serve as a reference for configuring network-wide ad blocking using Pi-hole on a Raspberry Pi 3 Model B+. While this guide is written with that specific hardware in mind, the concepts and procedures apply broadly to any Unix-like system with network capabilities.
+The purpose of this guide is to serve as a reference for configuring network-wide ad blocking using Pi-hole on a Raspberry Pi. The specific model used in this guide is a Raspberry Pi 3 Model B+, but the concepts and procedures apply broadly to any Unix-like system with network capabilities.
 
 ## Table of Contents
 
@@ -14,9 +14,12 @@ The purpose of this guide is to serve as a reference for configuring network-wid
   - [Flashing the MicroSD Card with Raspberry Pi Imager](#flashing-the-microsd-card-with-raspberry-pi-imager)
     - [Raspberry Pi Imager Setup Steps](#raspberry-pi-imager-setup-steps)
   - [Setting a Static IP Address](#setting-a-static-ip-address)
-  - [SSH to and Update the Server](#ssh-to-and-update-the-server)
+    - [Windows Command: Find Gateway IP](#windows-command-find-gateway-ip)
+    - [Linux Command: Find Gateway IP](#linux-command-find-gateway-ip)
+    - [Router Configuration Steps](#router-configuration-steps)
+  - [Connect to and Update the Server](#connect-to-and-update-the-server)
     - [SSH Command](#ssh-command)
-    - [Updating the System Command](#updating-the-system-command)
+    - [Updating the System Command(s)](#updating-the-system-commands)
   - [Installing Pi-hole](#installing-pi-hole) 
 - [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
@@ -27,28 +30,30 @@ In the official Pi-hole documentation, it is described as:
 
 > ...a DNS sinkhole that protects your devices from unwanted content, without installing any client-side software.
 
-A *DNS (Domain Name System)* translates human-readable domain names (such as `github.com`) into IP addresses that computers use to communicate. By acting as the DNS server for your network, Pi-hole is able to provide network-wide ad blocking by filtering requests at the DNS level. This is accomplished by blacklisting known advertising and tracking domains, preventing them from ever reaching your browser. The result is a cleaner browsing experience and a modest improvement to overall network security.
+A *DNS (Domain Name System)* translates human-readable domain names (such as `github.com`) into IP addresses that computers use to communicate. By acting as the DNS server for your network, Pi-hole is able to provide network-wide ad blocking by filtering requests at this level. This is accomplished by blacklisting known advertising and tracking domains, preventing them from ever reaching your browser. The result is a cleaner browsing experience and a modest improvement to overall network security.
 
-As mentioned above, Pi-hole operates using blocklists. Pi-hole ships with an official default blocklist; however, many users choose to add third-party lists that are more aggressive. While these lists can improve ad blocking effectiveness, they may also cause certain websites or services to break. Later in this guide, we will demonstrate how to add an additional blocklist.
+As mentioned above, Pi-hole operates using blocklists. Pi-hole ships with an official default blocklist, but some users choose to add third-party lists that are more aggressive. While these lists can improve ad blocking effectiveness, they may also cause certain websites or services to break. Later in this guide, we will demonstrate how to add additional blocklists if you wish.
 
-This guide walks through installing and configuring Pi-hole on a Raspberry Pi, including initial setup, network configuration, and basic maintenance. Basic familiarity with the Linux command line and home networking concepts is assumed; however, all steps are presented explicitly with the goal that the guide can be followed end-to-end without prior experience.
+This guide walks through installing and configuring Pi-hole on a Raspberry Pi, including initial setup, network configuration, and basic maintenance. Basic familiarity with the Linux command line and home networking concepts is assumed, but all steps are presented with the goal that the guide can be followed end-to-end without much experience.
 
-With the introduction out of the way, let’s get started.
+With the introduction out of the way, let’s get started!
 
 ## Parts List
 
 - Raspberry Pi 3 Model B+ (other Raspberry Pi models will also work)
-- MicroSD Card (8 GB minimum recommended)
+- MicroSD Card (32 GB was the smallest size available at Micro Center)
 - MicroSD Card Reader (required if your computer does not have a built-in reader)
-- 5V 2.5A Micro-USB Power Supply
+- 5V 2.5A Micro-USB Power Supply (an older Apple power brick worked for this setup; ensure the voltage and current ratings are appropriate)
 - Ethernet Cable (optional, but strongly recommended)
-- A Computer (Windows with WSL or Linux)
+- Computer (Windows with WSL or Linux)
 
 ## Installation and Configuration
 
 ### SSH Key Pair Generation
 
-To manage the Pi-hole server remotely, we need the ability to connect via SSH. SSH authentication can be done using a traditional username and password, or by using an SSH key pair for passwordless authentication. In this guide, SSH keys are used, as they are generally considered more secure and more convenient than password-based logins.
+For this guide, the Raspberry Pi is setup as a headless server, meaning no peripherals (monitor, keyboard, mouse, etc.) are connected to the device. To interact with and administer the server, a method of remote access is required.
+
+*Secure Shell (SSH)* is the network protocol that allows you to remotely log in to another machine and obtain shell access. SSH authentication can be performed using a traditional username and password, or by using an SSH key pair for passwordless authentication. In this guide, SSH keys are used, as they are generally considered more secure and more convenient than password-based logins.
 
 This section demonstrates how to generate an SSH key pair from the command line. In addition to improving security, this approach helps familiarize you with basic Linux command-line tools that are commonly used when administering servers.
 
@@ -60,9 +65,9 @@ ssh-keygen -t ed25519 -C "user@pihole"
 
 This command generates an SSH key pair. Paste it into a terminal on a Linux system (or Windows Subsystem for Linux if you are on Windows). Replace the `user` portion of the comment with your desired user account name.
 
-After running the command, you will be prompted to choose a file location for the key pair. Press `Enter` to accept the default location, which is typically `/home/user/.ssh/id_ed25519`. You will then be prompted to enter a passphrase. This step is optional; however, if this server will be used beyond this tutorial, setting a strong passphrase is recommended, as it encrypts the private key and adds an additional layer of security.
+After running the command, you will be prompted to choose a file location for the key pair. Press `Enter` to accept the default location, which is typically `/home/user/.ssh/id_ed25519`. You will then be prompted to enter a passphrase. This step is optional, however, if this server will be used beyond this tutorial, setting a strong passphrase is recommended, as it encrypts the private key and adds an additional layer of security.
 
-Once these steps are complete, the SSH key pair is generated. The public key can be viewed by opening the file in a text editor or by printing it to the terminal.
+Once these steps are complete, the SSH key pair is generated. The public and private keys can be viewed by opening the files in a text editor or by printing them to the terminal.
 
 Here is a breakdown of each component of the command:
 - `ssh-keygen`: The utility used to generate SSH key pairs.
@@ -121,16 +126,16 @@ Before opening the application, insert the microSD card into the reader and conn
 
 ### Setting a Static IP Address
 
-For the next part of the setup, we need to access the router's web interface. Open a web browser and enter the IP address of your router. Alternatively, many routers list a gateway URL on a label on the back of the device, which can also be used.
+For the next part of the setup, we need to access our router's web interface. Open a web browser and enter the IP address of your router. Alternatively, many routers list a gateway URL on a label on the back of the device, which can also be used.
 
 If you are unsure of your router's IP address, you can determine it using the following commands, depending on your operating system.
 
-#### Windows Gateway IP
+#### Windows Command: Find Gateway IP
 ```powershell
 ipconfig
 ```
 
-#### Linux Gateway IP
+#### Linux Command: Find Gateway IP
 ```bash
 ip route
 ```
@@ -139,19 +144,19 @@ ip route
 
 #### Router Configuration Steps
 1. **Log in to the web interface**
-   Using either the default credentials printed on the router or a password you previously set, log in to the router's web interface. If you have never accessed this page before or are unsure of the credentials, they are commonly printed on the back or underside of the router near the gateway URL.
+   Using either the default credentials or a password you previously set, log in to the router's web interface. If you have never accessed this page before or are unsure of the credentials, they are commonly printed on the back or underside of the router near the gateway URL.
 
 2. **Locate DHCP Settings**
-   Find the DHCP configuration section within the router's settings. The exact location varies by manufacturer. In my case, the following navigation path was used: `Network Settings > IPv4 Address Distribution > DHCP Connection Settings`. DHCP (Dynamic Host Configuration Protocol) is responsible for automatically assigning IP addresses to devices on a network.
+   Find the DHCP configuration section within the router's settings. *DHCP (Dynamic Host Configuration Protocol)* is responsible for automatically assigning IP addresses to devices on a network. The exact location of these settings varies by manufacturer. In my case, the following navigation path was used: `Network Settings > IPv4 Address Distribution > DHCP Connection Settings`.
 
 3. **Setting a Static IP Address**
-   In the list of connected devices, locate your Raspberry Pi using the hostname you configured earlier. Edit the device entry and change the lease type to `Static Lease Type`, then save or apply the changes.
+   In the list of connected devices, locate your Raspberry Pi using the hostname you set earlier. Edit the device entry and change the lease type to `Static Lease Type`, then save or apply the changes.
 
-> **Note**: Write down the IP address of the Raspberry Pi.
+> **Note**: Remember the IP address of the Raspberry Pi.
 
-### SSH to and Update the Server
+### Connect to and Update the Server
 
-This short section covers connecting to the Raspberry Pi via SSH for the first time and updating system packages. This process is simple and can be completed with two commands. Start by opening a terminal window and pasting the first command.
+This short section covers connecting to the Raspberry Pi via SSH for the first time and updating system packages. This process is simple and can be completed with just two commands. Start by opening a terminal window and pasting the first command.
 
 #### SSH Command 
 ```bash
@@ -167,7 +172,7 @@ You may be prompted to confirm adding the host to your list of known hosts. Acce
 
 Now that you are connected, the first administrative task is to update the system packages.
 
-#### Updating the System Command
+#### Updating the System Command(s)
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
@@ -179,6 +184,8 @@ Here is a breakdown of each component of the command:
 - `apt upgrade`: Installs available updates for installed packages.
 - `-y`: Automatically accepts prompts during the upgrade process.
 
+You will be prompted to enter your password. Type in the password you set while imaging the microSD in Raspberry Pi Imager. This may take a moment, but once it completes we are ready to move on.
+
 ### Installing Pi-hole
 
 Finally, it is time to install the Pi-hole software. Keeping this terminal session active, open a new browser window and navigate to the Pi-hole installation guide, linked [here](https://docs.pi-hole.net/main/basic-install/). 
@@ -188,6 +195,15 @@ The Pi-hole team has made this process straightforward by providing a one-step a
 ```bash
 curl -sSL https://install.pi-hole.net | bash
 ```
+
+Here is a breakdown of each component of the command:
+- `curl`: A command-line tool used to transfer data to or from a server using various protocols (HTTPS in this case).
+- `-s`: Runs curl in silent mode, silencing progress output and error messages.
+- `-S`: Displays error messages if the request fails (used in tandem with `-s`).
+- `-L`: Follows HTTP redirects automatically.
+- `https://install.pi-hole.net`: The URL hosting the official Pi-hole installation script.
+- `|`: Bash operator that sends or *pipes* the output of the command on the left as input to the command on the right.
+- `bash`: Executes the downloaded installation script using the Bash shell.
 
 Paste the command into the terminal session connected to your Raspberry Pi. The installation process will run automatically, so you can sit back and wait. Once the screen switches to the blue installer interface, you can proceed to the next section.
 
