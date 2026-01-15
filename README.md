@@ -27,9 +27,13 @@ In the official Pi-hole documentation, it is described as:
 
 > ...a DNS sinkhole that protects your devices from unwanted content, without installing any client-side software.
 
-DNS (Domain Name System) translates human-readable domain names (such as `google.com`) into IP addresses that computers use to communicate. In simple terms, Pi-hole provides network-wide ad blocking by blacklisting common advertising and tracking services at the DNS level. It has grown in popularity due to its ease of installation, minimal system requirements, and suitability for low-power, always-on devices such as the Raspberry Pi.
+A *DNS (Domain Name System)* translates human-readable domain names (such as `github.com`) into IP addresses that computers use to communicate. By acting as the DNS server for your network, Pi-hole is able to provide network-wide ad blocking by filtering requests at the DNS level. This is accomplished by blacklisting known advertising and tracking domains, preventing them from ever reaching your browser. The result is a cleaner browsing experience and a modest improvement to overall network security.
 
-This guide walks through installing and configuring Pi-hole on a Raspberry Pi, including initial setup, network configuration, and basic maintenance. Basic familiarity with the Linux command line and home networking concepts is assumed.
+As mentioned above, Pi-hole operates using blocklists. Pi-hole ships with an official default blocklist; however, many users choose to add third-party lists that are more aggressive. While these lists can improve ad blocking effectiveness, they may also cause certain websites or services to break. Later in this guide, we will demonstrate how to add an additional blocklist.
+
+This guide walks through installing and configuring Pi-hole on a Raspberry Pi, including initial setup, network configuration, and basic maintenance. Basic familiarity with the Linux command line and home networking concepts is assumed; however, all steps are presented explicitly with the goal that the guide can be followed end-to-end without prior experience.
+
+With the introduction out of the way, let’s get started.
 
 ## Parts List
 
