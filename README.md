@@ -6,8 +6,6 @@ The purpose of this guide is to serve as a reference for configuring network-wid
 
 ## Table of Contents
 
-## Table of Contents
-
 - [Introduction](#introduction)
 - [Parts List](#parts-list)
 - [Installation and Configuration](#installation-and-configuration)
