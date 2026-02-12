@@ -168,8 +168,6 @@ The update process may take a minute. Once complete, your Pi is fully up to date
 
 ## Router Configuration
 
-_Configuring your router to use Pi-hole as the network DNS server_
-
 - todo
 
 ## Server Maintenance
