@@ -15,9 +15,10 @@ A quickstart guide for deploying Pi-hole on a Raspberry Pi for home network-wide
 - [Generating an SSH Key Pair](#generating-an-ssh-key-pair)
 - [Raspberry Pi Imager](#raspberry-pi-imager)
 - [Hardware Setup](#hardware-setup)
+- [Router Configuration](#router-configuration)
 - [Connecting to and Updating the Server](#connecting-to-and-updating-the-server)
 - [Installing Pi-hole](#installing-pi-hole)
-- [Router Configuration](#router-configuration)
+- [More Router Configuration](#more-router-configuration)
 - [Server Maintenance](#server-maintenance)
 - [Troubleshooting](#troubleshooting)
 
@@ -166,7 +167,7 @@ The update process may take a minute. Once complete, your Pi is fully up to date
 
 - todo
 
-## Router Configuration
+## More Router Configuration
 
 - todo
 
