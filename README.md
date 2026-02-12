@@ -28,7 +28,7 @@ The goal of this guide is to teach you the bare minimum knowledge needed to set 
 
 According to the official documentation, Pi-hole is:
 
-> ...a DNS sinkhole that protects your devices from unwanted content, without installing any client-side software
+> ...a DNS sinkhole that protects your devices from unwanted content, without installing any client-side software.
 
 This means that you only need to set up one device to get network-wide ad blocking for every device on your network. That includes phones, tablets, smart TVs, laptops, the list goes on.
 
@@ -57,7 +57,7 @@ To remotely access a server we need to connect to it via SSH (Secure Shell). SSH
 
 ### Asymmetric Key Pairs
 
-Passwordless authentication relies on asymmetric encryption. I won't delve fully into this topic here, but essentially there are two keys needed to verify and establish the connection. We give the Pi-hole our public key (this is safe to share with anyone). We then have our own private key (DO NOT SHARE OR LOSE) which stays on our local machine. When we attempt to connect via SSH, the server uses our public key to verify that we possess the matching private key. This eliminates the need for a password, which is a common attack vector for malicious activity.
+Passwordless authentication relies on asymmetric encryption. I won't delve fully into this topic here, but essentially there are two keys needed to verify and establish the connection. We give the Pi-hole our public key (this is safe to share with anyone). We then have our own private key (**DO NOT SHARE OR LOSE**) which stays on our local machine. When we attempt to connect via SSH, the server uses our public key to verify that we possess the matching private key. This eliminates the need for a password, which is a common attack vector for malicious activity.
 
 ### ssh-keygen
 
