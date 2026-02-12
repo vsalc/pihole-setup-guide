@@ -147,7 +147,7 @@ When prompted, type `yes` to add the fingerprint to known hosts. If this does no
 
 ### Our First Administrative Task
 
-With the shell still open, we can perform our first administrative task: updating the server's packages. Paste the following command into the terminal and then enter the passphrase that you configured during SSH key generation.
+With the shell still open, we can perform our first administrative task: updating the server's packages. Paste the following command into the terminal and then enter the passphrase that you configured during setup.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
