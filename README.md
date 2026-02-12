@@ -35,7 +35,7 @@ According to the official documentation, Pi-hole is:
 
 This means that you only need to set up one device to get network-wide ad blocking for every device on your network. That includes phones, tablets, smart TVs, laptops, the list goes on.
 
-### How it works
+### How it Works
 
 DNS (Domain Name System) is the network protocol that translates human-readable domain names like `google.com` into IP addresses like `8.8.8.8` that computers actually use to communicate.
 
@@ -178,7 +178,7 @@ This is the only command that I will not give you a full breakdown for since I d
 
 ### Pi-hole Automated Installer
 
-1. **Pages 1 & 2**: The first two pages are purely informational. No work is needed here, so just hit `Ok` for both (as if you have any other option).
+1. **Pages 1 & 2**: The first two pages are purely informational. No work is needed here, so just hit `OK` for both (as if you have any other option).
 
 2. **Static IP Needed**: This slide is a final reminder that a static IP address is needed. If you have been following along up to this point, this is already done and you can continue. If you skipped this, exit and review [Router Configuration](#router-configuration).
 
@@ -196,7 +196,7 @@ This is the only command that I will not give you a full breakdown for since I d
 
 ### Changing Default Password
 
-Just like changing the default password of your router interface, you should also change the default password of your Pi-hole interface. Close the automated installer by selecting `Ok`, then type the following command in the terminal to set a new password.
+Just like changing the default password of your router interface, you should also change the default password of your Pi-hole interface. Close the automated installer by selecting `OK`, then type the following command in the terminal to set a new password.
 
 ```bash
 pihole setpassword
@@ -240,7 +240,7 @@ Back in my router's web interface, I again navigated to `Advanced → Network Se
 
 ### Ads Be Gone
 
-Head back over to your Pi-hole web interface and you should now see some queries being requested and hopefully blocked. To test this, head over to any website that you know has a lot of ads. News sites are good, but I used [SpeedTest](https://speedtest.net) to test this.
+Head back over to your Pi-hole web interface and you should now see some queries being requested and hopefully blocked. To test this, head over to any website that you know has a lot of ads. News sites are good, but I used [Speed Test](https://speedtest.net) to test this.
 
 If all has gone to plan, this site should be ad-free. It is fun to toggle Pi-hole on and off as your DNS in your router interface to see the difference between sites.
 
@@ -261,7 +261,7 @@ sudo crontab -e
 - **sudo**: runs the command with superuser privileges (this should be second nature by now)
 - **crontab -e**: opens the cron table editor for the root user, allowing you to schedule automated tasks
 
-When you run this command for the first time, you may be prompted to select an editor. Choose your preferred text editor (nano is beginner-friendly). Once the editor opens, paste the following configuration at the bottom of the file.
+When you run this command for the first time, you may be prompted to select an editor. Once the editor opens, paste the following configuration at the bottom of the file.
 
 ### Basic Crontab
 
@@ -276,7 +276,7 @@ When you run this command for the first time, you may be prompted to select an e
 0 4 * * 6 /sbin/reboot
 ```
 
-This basic crontab updates Pi-hole, updates system packages, and reboots the server once a week. You can adjust the times to whenever you like, but I tried to schedule them at times that would cause the least amount of interruption. Save and exit the editor when done (in nano: `Ctrl+X`, then `Y`, then `Enter`).
+This basic crontab updates Pi-hole, updates system packages, and reboots the server once a week. You can adjust the times to whenever you like, but I tried to schedule them at times that would cause the least amount of interruption. Save and quit the editor when done.
 
 ## Troubleshooting
 
@@ -288,7 +288,7 @@ During my initial attempts I was using the Raspberry Pi Imager on Ubuntu Linux. 
 
 ### Issue #2: Query Rate Limiting
 
-My home network has a lot of devices, so I ran into some issues with the Pi-hole getting rate limited, causing network problems. This configuration setting can be changed in one of two places: `pihole-FTL.conf` or in the web interface.
+My home network has a lot of devices, so I ran into some issues with the Pi-hole getting rate limited, causing network problems. This configuration setting can be changed in one of two places: Pi-hole's FTL configuration file or in the web interface.
 
 I will show you how to edit this in the configuration file. Open `/etc/pihole/pihole-FTL.conf` in your preferred text editor. You need sudo privileges to do this. The default rate limit is 1000 queries per 60 seconds.
 
@@ -298,7 +298,7 @@ RATE_LIMIT=1000/60
 
 Increasing this value to `5000/60` solved the issues for me, but every network is different. If you want to disable rate limiting entirely, you can set it to `0/0`.
 
-After saving and exiting the file, you need to restart your Pi-hole DNS for the changes to take effect. This can be done with the following command:
+After saving and quitting the file, you need to restart your Pi-hole DNS for the changes to take effect. This can be done with the following command:
 
 ```bash
 sudo pihole restartdns
