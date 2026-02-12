@@ -258,7 +258,7 @@ sudo crontab -e
 
 ### Command Breakdown
 
-- **sudo**: runs the command with superuser privileges (this should be second nature by now)
+- **sudo**: c'mon we should know this by now
 - **crontab -e**: opens the cron table editor for the root user, allowing you to schedule automated tasks
 
 When you run this command for the first time, you may be prompted to select an editor. Once the editor opens, paste the following configuration at the bottom of the file.
