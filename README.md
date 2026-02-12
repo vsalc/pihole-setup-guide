@@ -165,7 +165,67 @@ The update process may take a minute. Once complete, your Pi is fully up to date
 
 ## Installing Pi-hole
 
-- todo
+The Pi-hole team has extensive documentation that I highly encourage you to read for yourself to fully understand some of the things you can do to manage this device. Here is a [link](https://docs.pi-hole.net/) to that information.
+
+The installation is very simple. Pi-hole has a one-step automated install command which you can copy and paste into your terminal.
+
+```bash
+curl -sSL https://install.pi-hole.net | bash
+```
+
+This is the only command that I will not give you a full breakdown for since I do not know everything that it is doing under the hood. At a high level though, you are curling (downloading) the install script and then piping the output into bash (executing the script). This will open up a blue automated installer menu. The following steps are how I configured my installation.
+
+### Pi-hole Automated Installer
+
+1. **Pages 1 & 2**: The first two pages are purely informational. No work is needed here, so just hit `Ok` for both (as if you have any other option).
+
+2. **Static IP Needed**: This slide is a final reminder that a static IP address is needed. If you have been following along up to this point, this is already done and you can continue. If you skipped this, exit and review [Router Configuration](#router-configuration).
+
+3. **Choose An Interface**: Select the network interface which your Pi is going to use. If you are using Ethernet this is `eth0`. If you are using WiFi then this is `wlan0`.
+
+4. **Select Upstream DNS Provider**: Here you configure the upstream DNS that your Pi-hole will use for all requests that are not blocked. I chose `Cloudflare (DNSSEC)`, but any should work.
+
+5. **Blocklists**: This page asks if you would like to install the default blocklist that ships with Pi-hole. Select `Yes`. If you have a custom blocklist you want to use, you can skip this step, but you will have to install that later in the Pi-hole web interface for the Pi-hole to actually do anything.
+
+6. **Enable Logging**: Enabling query logging is good for troubleshooting your Pi-hole later down the road. Select `Yes`.
+
+7. **Select a privacy mode for FTL**: FTL (Faster Than Light) is Pi-hole's DNS engine. Privacy mode determines what information is logged. I chose `Show everything` for maximum visibility.
+
+8. **Installation Complete**: With that, your Pi-hole is 99% set up. On this page you need to note a few pieces of information: IPv4 address, web interface URL, and admin password.
+
+### Changing Default Password
+
+Just like changing the default password of your router portal, you should also change the default password of your Pi-hole interface. Close the automated installer by selecting `Ok`, then type the following command in the terminal to set a new password.
+
+```bash
+pihole setpassword
+```
+
+### Command Breakdown
+
+- **pihole**: the Pi-hole command-line utility for managing your Pi-hole installation
+- **setpassword**: sets a new password for the web interface and API access
+
+### Refresh Gravity
+
+This is the final step in our terminal before fully switching over to the web interface. You may have noticed an error during Pi-hole installation:
+
+```
+[i] Script called with non-root privileges
+```
+
+This means that since we did not run the command with `sudo`, the gravity database was not created and loaded. This is where the blocklist lives. We can fix this now by pasting the following command in the terminal.
+
+```bash
+sudo pihole -g
+```
+
+### Command Breakdown
+
+- **sudo**: runs the command with superuser privileges (you remember this one, right?)
+- **pihole -g**: retrieves subscribed blocklists and consolidates them into one unique list for the built-in DNS server to use
+
+After this finishes, let's head over to the Pi-hole web interface and confirm that we can log in. Once done, head to the next section.
 
 ## More Router Configuration
 
