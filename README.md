@@ -21,6 +21,7 @@ A quickstart guide for deploying Pi-hole on a Raspberry Pi for home network-wide
 - [More Router Configuration](#more-router-configuration)
 - [Server Maintenance](#server-maintenance)
 - [Troubleshooting](#troubleshooting)
+- [Conclusion](#conclusion)
 
 ## Introduction
 
@@ -38,7 +39,7 @@ This means that you only need to set up one device to get network-wide ad blocki
 
 DNS (Domain Name System) is the network protocol that translates human-readable domain names like `google.com` into IP addresses like `8.8.8.8` that computers actually use to communicate.
 
-Pi-hole intercepts all DNS requests on your network. Once it receives a request, it checks if the domain is on its blocklist. Pi-hole relies on these blocklists. The default blocklist includes some of the most common ad services. People have created their own (more aggressive) blocklists which we'll show you how to install later, if you choose. If the domain is blocked, Pi-hole drops the request. **No ads, yay!** If the request is allowed, Pi-hole forwards it to your configured upstream DNS server, and you get your content as expected.
+Pi-hole intercepts all DNS requests on your network. Once it receives a request, it checks if the domain is on its blocklist. Pi-hole relies on these blocklists. The default blocklist includes some of the most common ad services. People have created their own (more aggressive) blocklists which you can add later, if you choose. If the domain is blocked, Pi-hole drops the request. **No ads, yay!** If the request is allowed, Pi-hole forwards it to your configured upstream DNS server, and you get your content as expected.
 
 ## Hardware
 
@@ -91,7 +92,7 @@ Now it's time to flash Raspberry Pi OS onto our MicroSD card. Grab your MicroSD 
 
 3. **Select your storage device**: Identify the MicroSD card and select it. If there are multiple drives, try selecting `Exclude system drives`.
 
-4. **Customization: Choose hostname**: Enter the hostname for your device. You will use this to identify the device later in your router portal. I went with something simple like `pihole`.
+4. **Customization: Choose hostname**: Enter the hostname for your device. You will use this to identify the device later in your router interface. I went with something simple like `pihole`.
 
 5. **Customization: Localization**: This section is likely autocompleted. However, if it is not, then select the proper capital city, time zone, and keyboard layout.
 
@@ -109,7 +110,7 @@ That is the complete walkthrough of the Raspberry Pi Imager software. Once the w
 
 ## Hardware Setup
 
-Hardware setup is quick and easy. Take the MicroSD card and insert it in the slot on the underbelly of the Pi. Connect your power supply and your Ethernet cable (if you are using one). That's it! The Pi will boot on its own. There will be a flashing activity light. Once this light calms down, the boot process has finished. This is the last time you ever have to physically touch this device. Before we start doing anything on the server, we have a few things we need to do in our router portal first. Head back to your computer and open this up. If you don't know where this is, I will offer some help in the next section.
+Hardware setup is quick and easy. Take the MicroSD card and insert it in the slot on the underbelly of the Pi. Connect your power supply and your Ethernet cable (if you are using one). That's it! The Pi will boot on its own. There will be a flashing activity light. Once this light calms down, the boot process has finished. This is the last time you ever have to physically touch this device. Before we start doing anything on the server, we have a few things we need to do in our router interface first. Head back to your computer and open this up. If you don't know where this is, I will offer some help in the next section.
 
 ## Router Configuration
 
@@ -117,17 +118,17 @@ Remember that our Pi-hole is a DNS server. For our devices to reliably communica
 
 ### Static IP Addresses
 
-If the IP address keeps changing, how can our devices reliably find the Pi-hole? We need to reserve a static IP address for it. This is done in your router's web portal through DHCP reservation (also called static DHCP). This binds the Pi's MAC address to a specific IP, ensuring it always has the same address.
+If the IP address keeps changing, how can our devices reliably find the Pi-hole? We need to reserve a static IP address for it. This is done in your router's web interface through DHCP reservation (also called static DHCP). This binds the Pi's MAC address to a specific IP, ensuring it always has the same address.
 
-### Accessing Your Router Portal
+### Accessing Your Router's Web Interface
 
-If you have never accessed your router web portal before, you can likely find its gateway URL and admin password on the back or underbelly of your router. Enter the gateway URL into your web browser, then log in with the admin credentials.
+If you have never accessed your router web interface before, you can likely find its gateway URL and admin password on the back or underbelly of your router. Enter the gateway URL into your web browser, then log in with the admin credentials.
 
 **Important**: Changing the default password shipped with routers is good security practice and highly recommended.
 
 ### Setting a Static IP Address
 
-Every router portal is different, but I'll walk through my process to give you an idea of what to look for on your specific hardware. In my portal, I navigated to `Advanced → Network Settings → IPv4 Address Distribution`. There is a list of connected devices. I located my Pi by the hostname I set earlier. I selected to edit it, which brought me to `DHCP Connection Settings`. Here, select `Static Lease Type` and enter your desired IP address. The default here was fine. Make sure to note this IP address because you will need it later to SSH to the server.
+Every router interface is different, but I'll walk through my process to give you an idea of what to look for on your specific hardware. In my interface, I navigated to `Advanced → Network Settings → IPv4 Address Distribution`. There is a list of connected devices. I located my Pi by the hostname I set earlier. I selected to edit it, which brought me to `DHCP Connection Settings`. Here, select `Static Lease Type` and enter your desired IP address. The default here was fine. Make sure to note this IP address because you will need it later to SSH to the server.
 
 ## Connecting to and Updating the Server
 
@@ -195,7 +196,7 @@ This is the only command that I will not give you a full breakdown for since I d
 
 ### Changing Default Password
 
-Just like changing the default password of your router portal, you should also change the default password of your Pi-hole interface. Close the automated installer by selecting `Ok`, then type the following command in the terminal to set a new password.
+Just like changing the default password of your router interface, you should also change the default password of your Pi-hole interface. Close the automated installer by selecting `Ok`, then type the following command in the terminal to set a new password.
 
 ```bash
 pihole setpassword
@@ -229,16 +230,88 @@ After this finishes, let's head over to the Pi-hole web interface and confirm th
 
 ## More Router Configuration
 
-- todo
+After logging into your Pi-hole web interface, you may have noticed that nothing is happening. This is totally normal. The Pi-hole is completely ready to use, but we have not configured it as our network's DNS server yet. To do so, head back to your router's web interface.
+
+Again, everyone's hardware is different, but I will provide my process as a loose guide for completing this step.
+
+### Setting Pi-hole as Your DNS
+
+Back in my router's web interface, I again navigated to `Advanced → Network Settings`. This time however, I went to `Network Connections → Network Connection Broadband Settings`. Here I scrolled until I found `IPv4 DNS`. By default, this uses your ISP's DNS servers. Set this to `Use the Following IPv4 DNS Addresses`. In the first slot, enter the IP address of your Pi-hole. The second slot can be left blank or set to `0.0.0.0`. **Make sure to apply these changes.**
+
+### Ads Be Gone
+
+Head back over to your Pi-hole web interface and you should now see some queries being requested and hopefully blocked. To test this, head over to any website that you know has a lot of ads. News sites are good, but I used [SpeedTest](https://speedtest.net) to test this.
+
+If all has gone to plan, this site should be ad-free. It is fun to toggle Pi-hole on and off as your DNS in your router interface to see the difference between sites.
+
+At this point, you have fully installed and configured Pi-hole for network-wide ad blocking. If you are happy with this setup, you can skip the rest of the steps in this guide.
 
 ## Server Maintenance
 
-- todo
+The first extra step is to add a crontab so that the server can perform a few basic administrative tasks on its own. A crontab (cron table) is a file that schedules commands to run automatically at specified times. This allows your Pi-hole to stay updated without manual intervention. Below is the basic crontab I set up.
+
+### Generating a Crontab
+
+```bash
+sudo crontab -e
+```
+
+### Command Breakdown
+
+- **sudo**: runs the command with superuser privileges (this should be second nature by now)
+- **crontab -e**: opens the cron table editor for the root user, allowing you to schedule automated tasks
+
+When you run this command for the first time, you may be prompted to select an editor. Choose your preferred text editor (nano is beginner-friendly). Once the editor opens, paste the following configuration at the bottom of the file.
+
+### Basic Crontab
+
+```bash
+# Pi-hole Full Update (Sundays at 03:00)
+0 3 * * 0 /usr/local/bin/pihole -up
+
+# System Update (Saturdays at 03:00)
+0 3 * * 6 /usr/bin/apt update && /usr/bin/apt upgrade -y
+
+# System Reboot (Saturdays at 04:00)
+0 4 * * 6 /sbin/reboot
+```
+
+This basic crontab updates Pi-hole, updates system packages, and reboots the server once a week. You can adjust the times to whenever you like, but I tried to schedule them at times that would cause the least amount of interruption. Save and exit the editor when done (in nano: `Ctrl+X`, then `Y`, then `Enter`).
 
 ## Troubleshooting
 
-- todo
+Not every install goes to plan. I had a few things break for me, so I wanted to highlight them here just in case you run into some of the same issues.
 
-<!--
-During my initial attempts I was using the Raspberry Pi Imager on Ubuntu Linux. I ran into an issue where the Micro SD card would be flashed with this OS, but no configuration settings had been saved. This meant I could not SSH in. I was unable to resolve this issue and had to move over to a Windows system for this step.
--->
+### Issue #1: Raspberry Pi Imager
+
+During my initial attempts I was using the Raspberry Pi Imager on Ubuntu Linux. I ran into an issue where the MicroSD card would be flashed with the OS, but no configuration settings had been saved. This meant I could not SSH in. I was unable to resolve this issue and had to move over to a Windows system for this step.
+
+### Issue #2: Query Rate Limiting
+
+My home network has a lot of devices, so I ran into some issues with the Pi-hole getting rate limited, causing network problems. This configuration setting can be changed in one of two places: `pihole-FTL.conf` or in the web interface.
+
+I will show you how to edit this in the configuration file. Open `/etc/pihole/pihole-FTL.conf` in your preferred text editor. You need sudo privileges to do this. The default rate limit is 1000 queries per 60 seconds.
+
+```bash
+RATE_LIMIT=1000/60
+```
+
+Increasing this value to `5000/60` solved the issues for me, but every network is different. If you want to disable rate limiting entirely, you can set it to `0/0`.
+
+After saving and exiting the file, you need to restart your Pi-hole DNS for the changes to take effect. This can be done with the following command:
+
+```bash
+sudo pihole restartdns
+```
+
+### Issue #3: Private Relay
+
+If you have Apple devices on your network, they may be using something called Private Relay. This is an Apple privacy feature that encrypts and routes DNS queries through Apple's servers, which is incompatible with Pi-hole's DNS filtering.
+
+If you want Pi-hole to work for your Apple devices, on each device navigate to `Settings → Apple Account → iCloud → Private Relay` and disable it.
+
+I am not making any recommendations as to which service is more secure or useful. This is just the steps one could follow if they decided for themselves that Pi-hole fits their specific needs better.
+
+## Conclusion
+
+Thanks for taking the time to read my guide. I hope this has helped you get your network ad-free. I am continuing to work on new projects, so stay tuned for more tutorials!
