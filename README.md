@@ -316,6 +316,4 @@ I am not making any recommendations as to which service is more secure or useful
 
 Thanks for taking the time to read my guide. I hope this has helped you get your network ad-free. I am continuing to work on new projects, so stay tuned for more tutorials!
 
-## License
-
 This guide is licensed under [Creative Commons Attribution 4.0 International](LICENSE) (CC BY 4.0).
